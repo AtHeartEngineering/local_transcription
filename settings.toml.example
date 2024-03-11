@@ -1,0 +1,8 @@
+[host]
+ip="192.168.0.99"
+port=5063
+
+[settings]
+upload_folder="uploads"
+model_folder="models"
+hf_token="HUGGINGFACE API KEY"

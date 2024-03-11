@@ -1,0 +1,5 @@
+settings.toml
+audio.mp3
+uploads/*
+models/*
+venv
