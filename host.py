@@ -5,6 +5,7 @@ import torch
 from werkzeug.utils import secure_filename
 import os
 import toml
+from format import format_srt
 
 settings = toml.load('settings.toml')
 
@@ -39,12 +40,10 @@ def transcribe_audio():
           model = whisperx.load_model("large-v2", device, language=language, compute_type=compute_type, download_root=model_dir)
           audio = whisperx.load_audio(file_path)
           result = model.transcribe(audio, batch_size=batch_size)
-          print(result["segments"])  # before alignment
 
           # Align Whisper output
           model_a, metadata = whisperx.load_align_model(language_code=result["language"], device=device)
           result = whisperx.align(result["segments"], model_a, metadata, audio, device, return_char_alignments=False)
-          print(result["segments"])  # after alignment
 
         # Assign speaker labels
         diarize_model = whisperx.DiarizationPipeline(use_auth_token=HF_TOKEN, device=device)
@@ -57,8 +56,8 @@ def transcribe_audio():
         del model, model_a, diarize_model
 
         os.remove(file_path)  # Remove the uploaded file after processing
-
-        return jsonify(result["segments"])
+        srt = format_srt(result['segments'])
+        return jsonify(srt)
 
     return jsonify(error="Invalid file type"), 400
 
